@@ -538,29 +538,6 @@ class StatementAnalyzer
             }
         }
 
-    @Override
-    protected Scope visitUnnest(Unnest node, Scope scope)
-    {
-        ImmutableList.Builder<Field> outputFields = ImmutableList.builder();
-        for (Expression expression : node.getExpressions()) {
-            ExpressionAnalysis expressionAnalysis = analyzeExpression(expression, scope);
-            if (node.isUnnestTable()) {
-                throw SemanticExceptions.throwNotSupportedException(node, "TABLE expression");
-            } else {
-                Type expressionType = expressionAnalysis.getType(expression);
-                if (expressionType instanceof ArrayType) {
-                    outputFields.add(Field.newUnqualified(Optional.empty(), ((ArrayType) expressionType).getElementType()));
-                }
-                else if (expressionType instanceof MapType) {
-                    outputFields.add(Field.newUnqualified(Optional.empty(), ((MapType) expressionType).getKeyType()));
-                    outputFields.add(Field.newUnqualified(Optional.empty(), ((MapType) expressionType).getValueType()));
-                }
-                else {
-                    throw new PrestoException(INVALID_FUNCTION_ARGUMENT, "Cannot unnest type: " + expressionType);
-                }
-            }
-        }
-
         @Override
         protected Scope visitExplain(Explain node, Scope scope)
                 throws SemanticException
@@ -601,16 +578,21 @@ class StatementAnalyzer
             ImmutableList.Builder<Field> outputFields = ImmutableList.builder();
             for (Expression expression : node.getExpressions()) {
                 ExpressionAnalysis expressionAnalysis = analyzeExpression(expression, scope);
-                Type expressionType = expressionAnalysis.getType(expression);
-                if (expressionType instanceof ArrayType) {
-                    outputFields.add(Field.newUnqualified(Optional.empty(), ((ArrayType) expressionType).getElementType()));
-                }
-                else if (expressionType instanceof MapType) {
-                    outputFields.add(Field.newUnqualified(Optional.empty(), ((MapType) expressionType).getKeyType()));
-                    outputFields.add(Field.newUnqualified(Optional.empty(), ((MapType) expressionType).getValueType()));
+                if (node.isUnnestTable()) {
+                    throw notSupportedException(node, "TABLE expression");
                 }
                 else {
-                    throw new PrestoException(INVALID_FUNCTION_ARGUMENT, "Cannot unnest type: " + expressionType);
+                    Type expressionType = expressionAnalysis.getType(expression);
+                    if (expressionType instanceof ArrayType) {
+                        outputFields.add(Field.newUnqualified(Optional.empty(), ((ArrayType) expressionType).getElementType()));
+                    }
+                    else if (expressionType instanceof MapType) {
+                        outputFields.add(Field.newUnqualified(Optional.empty(), ((MapType) expressionType).getKeyType()));
+                        outputFields.add(Field.newUnqualified(Optional.empty(), ((MapType) expressionType).getValueType()));
+                    }
+                    else {
+                        throw new PrestoException(INVALID_FUNCTION_ARGUMENT, "Cannot unnest type: " + expressionType);
+                    }
                 }
             }
             if (node.isWithOrdinality()) {
@@ -781,15 +763,15 @@ class StatementAnalyzer
                 throw new SemanticException(NON_NUMERIC_SAMPLE_PERCENTAGE, relation.getSamplePercentage(), "Sample percentage cannot contain column references");
             }
 
-        IdentityLinkedHashMap<Expression, Type> expressionTypes = getExpressionTypes(
-                session,
-                metadata,
-                sqlParser,
-                ImmutableMap.of(),
-                relation.getSamplePercentage(),
-                analysis.getParameters(),
-                analysis.isDescribe());
-        ExpressionInterpreter samplePercentageEval = expressionOptimizer(relation.getSamplePercentage(), metadata, session, expressionTypes);
+            IdentityLinkedHashMap<Expression, Type> expressionTypes = getExpressionTypes(
+                    session,
+                    metadata,
+                    sqlParser,
+                    ImmutableMap.of(),
+                    relation.getSamplePercentage(),
+                    analysis.getParameters(),
+                    analysis.isDescribe());
+            ExpressionInterpreter samplePercentageEval = expressionOptimizer(relation.getSamplePercentage(), metadata, session, expressionTypes);
 
             Object samplePercentageObject = samplePercentageEval.optimize(symbol -> {
                 throw new SemanticException(NON_NUMERIC_SAMPLE_PERCENTAGE, relation.getSamplePercentage(), "Sample percentage cannot contain column references");
