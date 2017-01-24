@@ -63,6 +63,7 @@ public class TestFeaturesConfig
                 .setOptimizeMixedDistinctAggregations(false)
                 .setLegacyOrderBy(false)
                 .setIterativeOptimizerEnabled(true)
+                .setLegacyTimestamp(true)
                 .setIterativeOptimizerTimeout(new Duration(3, MINUTES))
                 .setExchangeCompressionEnabled(false));
     }
@@ -99,6 +100,7 @@ public class TestFeaturesConfig
                 .put("experimental.spiller-threads", "42")
                 .put("experimental.spiller-max-used-space-threshold", "0.8")
                 .put("exchange.compression-enabled", "true")
+                .put("deprecated.legacy-timestamp", "false")
                 .build();
         Map<String, String> properties = new ImmutableMap.Builder<String, String>()
                 .put("experimental.resource-groups-enabled", "true")
@@ -129,6 +131,7 @@ public class TestFeaturesConfig
                 .put("experimental.spiller-threads", "42")
                 .put("experimental.spiller-max-used-space-threshold", "0.8")
                 .put("exchange.compression-enabled", "true")
+                .put("deprecated.legacy-timestamp", "false")
                 .build();
 
         FeaturesConfig expected = new FeaturesConfig()
@@ -159,7 +162,8 @@ public class TestFeaturesConfig
                 .setSpillerThreads(42)
                 .setSpillMaxUsedSpaceThreshold(0.8)
                 .setLegacyOrderBy(true)
-                .setExchangeCompressionEnabled(true);
+                .setExchangeCompressionEnabled(true)
+                .setLegacyTimestamp(false);
 
         assertFullMapping(properties, expected);
         assertDeprecatedEquivalence(FeaturesConfig.class, properties, propertiesLegacy);
