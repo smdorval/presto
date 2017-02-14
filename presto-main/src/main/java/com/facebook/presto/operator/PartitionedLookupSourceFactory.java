@@ -72,9 +72,6 @@ public final class PartitionedLookupSourceFactory
     private Map<Integer, SingleStreamSpiller> spilledLookupSources = new HashMap<>();
 
     @GuardedBy("this")
-    private Optional<PartitioningSpiller> probeSpiller = Optional.empty();
-
-    @GuardedBy("this")
     private final SpillerFactory spillerFactory;
 
     @GuardedBy("this")
@@ -207,11 +204,6 @@ public final class PartitionedLookupSourceFactory
         synchronized (this) {
             spilledLookupSources.values().forEach(SingleStreamSpiller::close);
             spilledLookupSources.clear();
-
-            if (probeSpiller.isPresent()) {
-                probeSpiller.get().close();
-                probeSpiller = Optional.empty();
-            }
         }
         destroyed.complete(null);
     }
@@ -228,24 +220,21 @@ public final class PartitionedLookupSourceFactory
     }
 
     @Override
-    public synchronized PartitioningSpiller getProbeSpiller(List<Type> probeTypes, HashGenerator probeHashGenerator)
+    public synchronized PartitioningSpiller createProbeSpiller(List<Type> probeTypes, HashGenerator probeHashGenerator)
     {
         checkAllFuturesDone();
-        if (!probeSpiller.isPresent()) {
-            ImmutableSet.Builder<Integer> unspilledPartitions = ImmutableSet.builder();
-            for (int partition = 0; partition < partitions.length; partition++) {
-                if (!spilledLookupSources.containsKey(partition)) {
-                    unspilledPartitions.add(partition);
-                }
+        ImmutableSet.Builder<Integer> unspilledPartitions = ImmutableSet.builder();
+        for (int partition = 0; partition < partitions.length; partition++) {
+            if (!spilledLookupSources.containsKey(partition)) {
+                unspilledPartitions.add(partition);
             }
-
-            probeSpiller = Optional.of(spillerFactory.createPartitioningSpiller(
-                    probeTypes,
-                    new LocalPartitionGenerator(probeHashGenerator, partitions.length),
-                    partitions.length,
-                    unspilledPartitions.build()));
         }
-        return probeSpiller.get();
+
+        return spillerFactory.createPartitioningSpiller(
+                probeTypes,
+                new LocalPartitionGenerator(probeHashGenerator, partitions.length),
+                partitions.length,
+                unspilledPartitions.build());
     }
 
     private void checkAllFuturesDone()
