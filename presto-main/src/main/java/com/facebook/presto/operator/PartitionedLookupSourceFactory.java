@@ -21,6 +21,7 @@ import com.facebook.presto.spi.type.Type;
 import com.facebook.presto.spiller.PartitioningSpiller;
 import com.facebook.presto.spiller.PartitioningSpillerFactory;
 import com.facebook.presto.spiller.SingleStreamSpiller;
+import com.facebook.presto.spiller.SpillerFactory;
 import com.facebook.presto.sql.gen.JoinFilterFunctionCompiler.JoinFilterFunctionFactory;
 import com.facebook.presto.sql.planner.Symbol;
 import com.google.common.collect.ImmutableList;
