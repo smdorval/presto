@@ -36,6 +36,7 @@ import com.facebook.presto.sql.planner.plan.IntersectNode;
 import com.facebook.presto.sql.planner.plan.JoinNode;
 import com.facebook.presto.sql.planner.plan.LimitNode;
 import com.facebook.presto.sql.planner.plan.MarkDistinctNode;
+import com.facebook.presto.sql.planner.plan.MergeNode;
 import com.facebook.presto.sql.planner.plan.MetadataDeleteNode;
 import com.facebook.presto.sql.planner.plan.OutputNode;
 import com.facebook.presto.sql.planner.plan.PlanNode;
@@ -486,6 +487,14 @@ public final class ValidateDependenciesChecker
         }
 
         @Override
+        public Void visitMerge(MergeNode node, Set<Symbol> boundSymbols)
+        {
+            verifyUniqueId(node);
+
+            return null;
+        }
+
+        @Override
         public Void visitExchange(ExchangeNode node, Set<Symbol> boundSymbols)
         {
             for (int i = 0; i < node.getSources().size(); i++) {
@@ -495,6 +504,10 @@ public final class ValidateDependenciesChecker
             }
 
             checkDependencies(node.getOutputSymbols(), node.getPartitioningScheme().getOutputLayout(), "EXCHANGE must provide all of the necessary symbols for partition function");
+
+            if (node.getType() == ExchangeNode.Type.MERGE_GATHER) {
+                checkArgument(node.getSources().size() == 1 && node.getSources().get(0) instanceof SortNode, "MERGE_GATHER exchange must be preceded by a SortNode");
+            }
 
             verifyUniqueId(node);
 

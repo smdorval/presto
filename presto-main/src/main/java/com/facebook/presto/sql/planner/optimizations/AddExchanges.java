@@ -113,6 +113,7 @@ import static com.facebook.presto.sql.planner.optimizations.LocalProperties.grou
 import static com.facebook.presto.sql.planner.plan.ExchangeNode.Scope.REMOTE;
 import static com.facebook.presto.sql.planner.plan.ExchangeNode.Type.GATHER;
 import static com.facebook.presto.sql.planner.plan.ExchangeNode.gatheringExchange;
+import static com.facebook.presto.sql.planner.plan.ExchangeNode.mergingExchange;
 import static com.facebook.presto.sql.planner.plan.ExchangeNode.partitionedExchange;
 import static com.facebook.presto.sql.planner.plan.ExchangeNode.replicatedExchange;
 import static com.facebook.presto.util.ImmutableCollectors.toImmutableList;
@@ -451,12 +452,7 @@ public class AddExchanges
         {
             PlanWithProperties child = planChild(node, context.withPreferredProperties(PreferredProperties.undistributed()));
 
-            if (!child.getProperties().isSingleNode()) {
-                child = withDerivedProperties(
-                        gatheringExchange(idAllocator.getNextId(), REMOTE, child.getNode()),
-                        child.getProperties());
-            }
-            else {
+            if (child.getProperties().isSingleNode()) {
                 // current plan so far is single node, so local properties are effectively global properties
                 // skip the SortNode if the local properties guarantee ordering on Sort keys
                 // TODO: This should be extracted as a separate optimizer once the planner is able to reason about the ordering of each operator
@@ -469,9 +465,22 @@ public class AddExchanges
                         .noneMatch(Optional::isPresent)) {
                     return child;
                 }
+                return rebaseAndDeriveProperties(node, child);
             }
 
-            return rebaseAndDeriveProperties(node, child);
+            if (SystemSessionProperties.isDistributedSortEnabled(session)) {
+                child = rebaseAndDeriveProperties(node, child);
+                PlanWithProperties sortThenMerge = withDerivedProperties(
+                        mergingExchange(idAllocator.getNextId(), REMOTE, child.getNode()),
+                        child.getProperties());
+                return sortThenMerge;
+            }
+            else {
+                child = withDerivedProperties(
+                        gatheringExchange(idAllocator.getNextId(), REMOTE, child.getNode()),
+                        child.getProperties());
+                return rebaseAndDeriveProperties(node, child);
+            }
         }
 
         @Override

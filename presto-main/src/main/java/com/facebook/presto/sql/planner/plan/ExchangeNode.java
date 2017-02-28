@@ -42,7 +42,8 @@ public class ExchangeNode
     {
         GATHER,
         REPARTITION,
-        REPLICATE
+        REPLICATE,
+        MERGE_GATHER
     }
 
     public enum Scope
@@ -146,6 +147,17 @@ public class ExchangeNode
         return new ExchangeNode(
                 id,
                 ExchangeNode.Type.GATHER,
+                scope,
+                new PartitioningScheme(Partitioning.create(SINGLE_DISTRIBUTION, ImmutableList.of()), child.getOutputSymbols()),
+                ImmutableList.of(child),
+                ImmutableList.of(child.getOutputSymbols()));
+    }
+
+    public static ExchangeNode mergingExchange(PlanNodeId id, Scope scope, PlanNode child)
+    {
+        return new ExchangeNode(
+                id,
+                ExchangeNode.Type.MERGE_GATHER,
                 scope,
                 new PartitioningScheme(Partitioning.create(SINGLE_DISTRIBUTION, ImmutableList.of()), child.getOutputSymbols()),
                 ImmutableList.of(child),

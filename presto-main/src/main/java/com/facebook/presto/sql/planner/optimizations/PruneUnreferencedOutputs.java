@@ -79,6 +79,7 @@ import java.util.stream.Collectors;
 
 import static com.facebook.presto.util.ImmutableCollectors.toImmutableList;
 import static com.facebook.presto.util.ImmutableCollectors.toImmutableSet;
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.base.Predicates.in;
 import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Sets.intersection;
@@ -126,6 +127,12 @@ public class PruneUnreferencedOutputs
             node.getPartitioningScheme().getHashColumn().ifPresent(expectedOutputSymbols::add);
             node.getPartitioningScheme().getPartitioning().getColumns().stream()
                     .forEach(expectedOutputSymbols::add);
+
+            if (node.getType() == ExchangeNode.Type.MERGE_GATHER) {
+                checkState(node.getSources().get(0) instanceof SortNode && node.getSources().size() == 1, "Merge must be preceded by sort");
+                SortNode sortNode = (SortNode) node.getSources().get(0);
+                expectedOutputSymbols.addAll(sortNode.getOrderBy());
+            }
 
             List<List<Symbol>> inputsBySource = new ArrayList<>(node.getInputs().size());
             for (int i = 0; i < node.getInputs().size(); i++) {
