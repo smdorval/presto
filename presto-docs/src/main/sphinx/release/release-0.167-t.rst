@@ -11,10 +11,10 @@ supports microseconds.
 
 **TIMESTAMP semantic changes**
 
-Teradata distribution of Presto does introduce fix of semantic of ``TIMESTAMP`` type.
+The Teradata distribution of Presto fixes the semantics of the ``TIMESTAMP`` type to align with the SQL standard.
 
-Previously ``TIMESTAMP`` was a type describing instance of time in Presto session time zone.
-Currently Presto treats this - as specified SQL standard - as set of following fields representing wall time:
+Previously, the ``TIMESTAMP`` type described an instance in time in the Presto session's time zone.
+Now, Presto treats ``TIMESTAMPs`` as a set of the following fields representing wall time:
 
  * ``YEAR OF ERA``
  * ``MONTH OF YEAR``
@@ -23,12 +23,13 @@ Currently Presto treats this - as specified SQL standard - as set of following f
  * ``MINUTE OF HOUR``
  * ``SECOND OF MINUTE`` - as decimal with precision 3
 
-For that reason ``TIMESTAMP`` value is not linked with session time zone in any way until time zone is needed explicitly.
-Those scenarios include casting to ``TIMESTAMP WITH TIME ZONE`` (and ``TIME WITH TIME ZONE``). In those scenarios
-time zone offset of session time zone and session time is applied as specified in SQL standard.
+For that reason, a ``TIMESTAMP`` value is not linked with the session time zone in any way until a time zone is needed explicitly,
+such as when casting to a ``TIMESTAMP WITH TIME ZONE`` or ``TIME WITH TIME ZONE``.
+In those cases, the time zone offset of the session time zone is applied, as specified in the SQL standard.
 
-For various compatibility reasons, when casting from data time type without time zone to one with time zone, fixed time
-zone is used as opposed to named one that may be set for session.
+For various compatibility reasons, when casting from date time type without a time zone to one with a time zone, a fixed time zone 
+is used as opposed to the named on that may be set for the session.
+
 eg. with ``-Duser.timezone="Asia/Kathmandu"`` on CLI
 
  * Query: ``SELECT CAST(TIMESTAMP '2000-01-01 10:00' AS TIMESTAMP WITH TIME ZONE);``
@@ -37,15 +38,15 @@ eg. with ``-Duser.timezone="Asia/Kathmandu"`` on CLI
 
 **TIME semantic changes**
 
-Similar changes as for ``TIMESTAMP`` types were applied to ``TIME`` type.
+The ``TIME`` type was changed similarly to the ``TIMESTAMP`` type.
 
 **TIME WITH TIME ZONE semantic changes**
 
-Due to compatilibity changes having TIME WITH TIME ZONE completly aligned with SQL standard was not possible at this point.
-For that reason, when calculating offset of time zone in which TIME WITH TIME ZONE is, Teradata distribution of Presto does
-use session start date and time.
+Due to compatibility requirements, having ``TIME WITH TIME ZONE`` completely aligned with the SQL standard was not possible yet.
+For that reason, when calculating the time zone offset for ``TIME WITH TIME ZONE``, the Teradata distribution of Presto uses the session's
+start date and time.
 
-This can be visible in queries using ``TIME WITH TIME ZONE`` in time zone that had historical time zone policy changes or uses DST.
+This can be seen in queries using ``TIME WITH TIME ZONE`` in a time zone that has had time zone policy changes or uses DST.
 eg. With session start time on 1 March 2017
 
  * Query: ``SELECT TIME '10:00:00 Asia/Kathmandu' AT TIME ZONE 'UTC'``
@@ -54,4 +55,4 @@ eg. With session start time on 1 March 2017
 
 **Bugfixes**
 
- * ``current_time`` and ``localtime`` functions were fixed
+ * ``current_time`` and ``localtime`` functions were fixed to return proper value.
