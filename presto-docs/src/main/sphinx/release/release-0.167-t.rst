@@ -6,7 +6,7 @@ Presto 0.167-t is equivalent to Presto release 0.167, with some additional featu
 
 **TIMESTAMP limitations**
 
-Presto supports a granularity of milliseconds for the ``TIMESTAMP`` datatype, while Hive
+Presto supports a granularity of milliseconds for the ``TIMESTAMP`` data type, while Hive
 supports microseconds.
 
 **TIMESTAMP semantic changes**
@@ -14,7 +14,7 @@ supports microseconds.
 The Teradata distribution of Presto fixes the semantics of the ``TIMESTAMP`` type to align with the SQL standard.
 
 Previously, the ``TIMESTAMP`` type described an instance in time in the Presto session's time zone.
-Now, Presto treats ``TIMESTAMPs`` as a set of the following fields representing wall time:
+Now, Presto treats ``TIMESTAMPS`` as a set of the following fields representing wall time:
 
  * ``YEAR OF ERA``
  * ``MONTH OF YEAR``
@@ -27,7 +27,7 @@ For that reason, a ``TIMESTAMP`` value is not linked with the session time zone 
 such as when casting to a ``TIMESTAMP WITH TIME ZONE`` or ``TIME WITH TIME ZONE``.
 In those cases, the time zone offset of the session time zone is applied, as specified in the SQL standard.
 
-For various compatibility reasons, when casting from date time type without a time zone to one with a time zone, a fixed time zone 
+For various compatibility reasons, when casting from date/time type without a time zone to one with a time zone, a fixed time zone 
 is used as opposed to the named on that may be set for the session.
 
 eg. with ``-Duser.timezone="Asia/Kathmandu"`` on CLI
@@ -55,4 +55,4 @@ eg. With session start time on 1 March 2017
 
 **Bugfixes**
 
- * ``current_time`` and ``localtime`` functions were fixed to return proper value.
+ * ``current_time`` and ``localtime`` functions were fixed to return the correct value for non-UTC timezones.
