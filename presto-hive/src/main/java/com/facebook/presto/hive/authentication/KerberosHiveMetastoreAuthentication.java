@@ -15,6 +15,7 @@ package com.facebook.presto.hive.authentication;
 
 import com.facebook.presto.hive.ForHiveMetastore;
 import com.facebook.presto.hive.HiveClientConfig;
+import com.facebook.presto.hive.HiveClientConfig.HdfsAuthenticationType;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 import org.apache.hadoop.hive.thrift.client.TUGIAssumingTransport;
@@ -29,6 +30,7 @@ import javax.security.sasl.Sasl;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 import static org.apache.hadoop.security.SaslRpcServer.AuthMethod.KERBEROS;
@@ -41,9 +43,22 @@ public class KerberosHiveMetastoreAuthentication
     private final HadoopAuthentication authentication;
 
     @Inject
-    public KerberosHiveMetastoreAuthentication(HiveClientConfig hiveClientConfig, @ForHiveMetastore HadoopAuthentication authentication)
+    public KerberosHiveMetastoreAuthentication(HiveClientConfig config, @ForHiveMetastore HadoopAuthentication authentication)
     {
-        this(hiveClientConfig.getHiveMetastoreServicePrincipal(), authentication);
+        this(config.getHiveMetastoreServicePrincipal(), authentication);
+
+        requireNonNull(config.getHiveMetastoreServicePrincipal(), "Kerberos principal is not set for metastore service");
+
+        requireNonNull(config.getHiveMetastoreClientPrincipal(), "Kerberos principal is not set for metastore client");
+
+        requireNonNull(config.getHiveMetastoreClientKeytab(), "Kerberos keytab is not set for metastore client");
+
+        requireNonNull(config.getHdfsPrestoPrincipal(), "Kerberos principal is not set for HDFS");
+
+        requireNonNull(config.getHdfsPrestoKeytab(), "Kerberos keytab is not set for HDFS");
+
+        checkArgument(config.getHdfsAuthenticationType() == HdfsAuthenticationType.KERBEROS,
+                "Incorrect authentication type for HDFS: " + config.getHdfsAuthenticationType());
     }
 
     public KerberosHiveMetastoreAuthentication(String hiveMetastoreServicePrincipal, HadoopAuthentication authentication)

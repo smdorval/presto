@@ -57,6 +57,7 @@ import java.util.Optional;
 import static com.google.common.io.ByteStreams.copy;
 import static com.google.common.io.ByteStreams.nullOutputStream;
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNull;
 import static javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag.REQUIRED;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.ietf.jgss.GSSCredential.ACCEPT_ONLY;
@@ -77,6 +78,10 @@ public class SpnegoFilter
     @Inject
     public SpnegoFilter(KerberosConfig config)
     {
+        requireNonNull(config.getKerberosConfig(), "Kerberos config file is not set");
+        requireNonNull(config.getKeytab(), "Kerberos keytab is not set");
+        requireNonNull(config.getServiceName(), "Kerberos service name is not set");
+
         System.setProperty("java.security.krb5.conf", config.getKerberosConfig().getAbsolutePath());
 
         try {
