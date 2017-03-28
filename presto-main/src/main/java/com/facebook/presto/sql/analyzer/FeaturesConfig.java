@@ -60,7 +60,7 @@ public class FeaturesConfig
     private boolean legacyOrderBy;
     private boolean legacyMapSubscript;
     private boolean optimizeMixedDistinctAggregations;
-    private boolean distributedSort = false;
+    private boolean distributedSort = true;
 
     private String processingOptimization = ProcessingOptimization.DISABLED;
     private boolean dictionaryAggregation;

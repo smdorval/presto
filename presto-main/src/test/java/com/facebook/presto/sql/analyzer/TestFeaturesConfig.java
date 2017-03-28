@@ -65,7 +65,7 @@ public class TestFeaturesConfig
                 .setIterativeOptimizerEnabled(true)
                 .setIterativeOptimizerTimeout(new Duration(3, MINUTES))
                 .setExchangeCompressionEnabled(false)
-                .setDistributedSortEnabled(false));
+                .setDistributedSortEnabled(true));
     }
 
     @Test
@@ -99,7 +99,7 @@ public class TestFeaturesConfig
                 .put("experimental.spiller-spill-path", "/tmp/custom/spill/path")
                 .put("experimental.spiller-threads", "42")
                 .put("exchange.compression-enabled", "true")
-                .put("experimental.distributed-sort", "true")
+                .put("experimental.distributed-sort", "false")
                 .build();
         Map<String, String> properties = new ImmutableMap.Builder<String, String>()
                 .put("experimental.resource-groups-enabled", "true")
@@ -129,7 +129,7 @@ public class TestFeaturesConfig
                 .put("experimental.spiller-spill-path", "/tmp/custom/spill/path")
                 .put("experimental.spiller-threads", "42")
                 .put("exchange.compression-enabled", "true")
-                .put("experimental.distributed-sort", "true")
+                .put("experimental.distributed-sort", "false")
                 .build();
 
         FeaturesConfig expected = new FeaturesConfig()
@@ -160,7 +160,7 @@ public class TestFeaturesConfig
                 .setSpillerThreads(42)
                 .setLegacyOrderBy(true)
                 .setExchangeCompressionEnabled(true)
-                .setDistributedSortEnabled(true);
+                .setDistributedSortEnabled(false);
 
         assertFullMapping(properties, expected);
         assertDeprecatedEquivalence(FeaturesConfig.class, properties, propertiesLegacy);
