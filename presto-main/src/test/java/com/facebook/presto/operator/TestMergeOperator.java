@@ -267,9 +267,6 @@ public class TestMergeOperator
         outputPages.addAll(pullAvailablePages(operator));
 
         taskBuffers.getUnchecked(TASK_1_ID).addPage(source1Pages.get(1), false);
-        if(operator.isBlocked().isDone()){
-            System.out.print("blah");
-        }
         assertOperatorIsBlocked(operator);
         taskBuffers.getUnchecked(TASK_2_ID).addPage(source2Pages.get(1), false);
         outputPages.addAll(pullAvailablePages(operator));
