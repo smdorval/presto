@@ -14,6 +14,7 @@
 package com.facebook.presto.sql.planner.iterative.rule.test;
 
 import com.facebook.presto.Session;
+import com.facebook.presto.cost.PlanNodeCost;
 import com.facebook.presto.metadata.Metadata;
 import com.facebook.presto.spi.type.Type;
 import com.facebook.presto.sql.planner.Plan;
@@ -21,10 +22,11 @@ import com.facebook.presto.sql.planner.PlanNodeIdAllocator;
 import com.facebook.presto.sql.planner.Symbol;
 import com.facebook.presto.sql.planner.SymbolAllocator;
 import com.facebook.presto.sql.planner.assertions.PlanMatchPattern;
-import com.facebook.presto.sql.planner.iterative.Lookup;
 import com.facebook.presto.sql.planner.iterative.Rule;
 import com.facebook.presto.sql.planner.plan.PlanNode;
+import com.facebook.presto.sql.planner.plan.PlanNodeId;
 import com.facebook.presto.sql.planner.planPrinter.PlanPrinter;
+import com.facebook.presto.testing.TestingLookup;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Map;
@@ -42,12 +44,12 @@ public class RuleAssert
     private final Rule rule;
 
     private final PlanNodeIdAllocator idAllocator = new PlanNodeIdAllocator();
-    private final Lookup lookup;
 
     private Map<Symbol, Type> symbols;
     private PlanNode plan;
+    private final TestingLookup lookup;
 
-    public RuleAssert(Metadata metadata, Lookup lookup, Session session, Rule rule)
+    public RuleAssert(Metadata metadata, TestingLookup lookup, Session session, Rule rule)
     {
         this.metadata = metadata;
         this.session = session;
@@ -63,6 +65,22 @@ public class RuleAssert
         plan = planProvider.apply(builder);
         symbols = builder.getSymbols();
         return this;
+    }
+
+    public RuleAssert withCosts(Map<PlanNodeId, PlanNodeCost> costs)
+    {
+        setCosts(plan, costs);
+        return this;
+    }
+
+    private void setCosts(PlanNode node, Map<PlanNodeId, PlanNodeCost> idCostMap)
+    {
+        if (idCostMap.containsKey(node.getId())) {
+            lookup.setCost(node, idCostMap.get(node.getId()));
+        }
+        for (PlanNode source : node.getSources()) {
+            setCosts(source, idCostMap);
+        }
     }
 
     public void doesNotFire()

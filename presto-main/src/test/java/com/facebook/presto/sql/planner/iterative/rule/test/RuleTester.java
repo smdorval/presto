@@ -15,7 +15,6 @@ package com.facebook.presto.sql.planner.iterative.rule.test;
 
 import com.facebook.presto.Session;
 import com.facebook.presto.metadata.Metadata;
-import com.facebook.presto.sql.planner.iterative.Lookup;
 import com.facebook.presto.sql.planner.iterative.Rule;
 import com.facebook.presto.testing.LocalQueryRunner;
 import com.facebook.presto.testing.TestingLookup;
@@ -28,7 +27,7 @@ public class RuleTester
 {
     private final Metadata metadata;
     private final Session session;
-    private final Lookup lookup;
+    private final TestingLookup lookup;
 
     public RuleTester()
     {
