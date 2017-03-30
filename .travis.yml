@@ -52,43 +52,43 @@ script:
     if [[ -v MAVEN_CHECKS ]]; then
       ./mvnw install -DskipTests -B -T C1
     fi
-  - |
-    if [[ -v TEST_SPECIFIC_MODULES ]]; then
-      ./mvnw test $MAVEN_SKIP_CHECKS_AND_DOCS -B -pl $TEST_SPECIFIC_MODULES -Dtest=TestLocalBinarySpilledQueries -DfailIfNoTests=false
-      ./mvnw test $MAVEN_SKIP_CHECKS_AND_DOCS -B -pl $TEST_SPECIFIC_MODULES
-    fi
-  - |
-    if [[ -v TEST_OTHER_MODULES ]]; then
-      ./mvnw test $MAVEN_SKIP_CHECKS_AND_DOCS -B -pl $TEST_OTHER_MODULES
-    fi
-  - |
-    if [[ -v PRODUCT_TESTS_BASIC_ENVIRONMENT ]]; then
-      presto-product-tests/bin/run_on_docker.sh \
-        multinode -x quarantine,big_query,storage_formats,profile_specific_tests,tpcds
-    fi
-  - |
-    if [[ -v PRODUCT_TESTS_SPECIFIC_ENVIRONMENT ]]; then
-      presto-product-tests/bin/run_on_docker.sh \
-        singlenode-kerberos-hdfs-impersonation -g storage_formats,cli,hdfs_impersonation,authorization
-    fi
-  - |
-    if [[ -v PRODUCT_TESTS_SPECIFIC_ENVIRONMENT ]]; then
-      presto-product-tests/bin/run_on_docker.sh \
-          multinode-tls-ldap -g smoke,cli,group-by,join,tls
-    fi
-    if [[ -v PRODUCT_TESTS_SPECIFIC_ENVIRONMENT ]]; then
-      presto-product-tests/bin/run_on_docker.sh \
-           multinode-tls-kerberos -g cli
-    fi
+#  - |
+#    if [[ -v TEST_SPECIFIC_MODULES ]]; then
+#      ./mvnw test $MAVEN_SKIP_CHECKS_AND_DOCS -B -pl $TEST_SPECIFIC_MODULES -Dtest=TestLocalBinarySpilledQueries -DfailIfNoTests=false
+#      ./mvnw test $MAVEN_SKIP_CHECKS_AND_DOCS -B -pl $TEST_SPECIFIC_MODULES
+#    fi
+#  - |
+#    if [[ -v TEST_OTHER_MODULES ]]; then
+#      ./mvnw test $MAVEN_SKIP_CHECKS_AND_DOCS -B -pl $TEST_OTHER_MODULES
+#    fi
+#  - |
+#    if [[ -v PRODUCT_TESTS_BASIC_ENVIRONMENT ]]; then
+#      presto-product-tests/bin/run_on_docker.sh \
+#        multinode -x quarantine,big_query,storage_formats,profile_specific_tests,tpcds
+#    fi
+#  - |
+#    if [[ -v PRODUCT_TESTS_SPECIFIC_ENVIRONMENT ]]; then
+#      presto-product-tests/bin/run_on_docker.sh \
+#        singlenode-kerberos-hdfs-impersonation -g storage_formats,cli,hdfs_impersonation,authorization
+#    fi
+#  - |
+#    if [[ -v PRODUCT_TESTS_SPECIFIC_ENVIRONMENT ]]; then
+#      presto-product-tests/bin/run_on_docker.sh \
+#          multinode-tls-ldap -g smoke,cli,group-by,join,tls
+#    fi
+#    if [[ -v PRODUCT_TESTS_SPECIFIC_ENVIRONMENT ]]; then
+#      presto-product-tests/bin/run_on_docker.sh \
+#           multinode-tls-kerberos -g cli
+#    fi
   - |
     if [[ -v PRODUCT_TESTS_SPECIFIC_ENVIRONMENT ]]; then
       presto-product-tests/bin/run_on_docker.sh \
         singlenode-sqlserver -g sqlserver
     fi
-  - |
-    if [[ -v HIVE_TESTS ]]; then
-      presto-hive-hadoop2/bin/run_on_docker.sh
-    fi
+#  - |
+#    if [[ -v HIVE_TESTS ]]; then
+#      presto-hive-hadoop2/bin/run_on_docker.sh
+#    fi
 
 before_cache:
   # Make the cache stable between builds by removing build output
