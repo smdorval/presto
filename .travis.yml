@@ -8,15 +8,15 @@ env:
     - ARTIFACTS_UPLOAD_PATH=travis_build_artifacts/${TRAVIS_REPO_SLUG}/${TRAVIS_BRANCH}/${TRAVIS_BUILD_NUMBER}
   matrix:
     - MAVEN_CHECKS=true
-    - TEST_SPECIFIC_MODULES=presto-tests
-    - TEST_SPECIFIC_MODULES=presto-raptor
-    - TEST_SPECIFIC_MODULES=presto-accumulo
-    - TEST_SPECIFIC_MODULES=presto-cassandra
-    - TEST_SPECIFIC_MODULES=presto-hive,presto-kafka,presto-mysql,presto-postgresql,presto-redis
-    - TEST_OTHER_MODULES=!presto-tests,!presto-raptor,!presto-accumulo,!presto-cassandra,!presto-hive,!presto-kafka,!presto-mysql,!presto-postgresql,!presto-redis,!presto-docs,!presto-server,!presto-server-rpm
-    - PRODUCT_TESTS_BASIC_ENVIRONMENT=true
+#    - TEST_SPECIFIC_MODULES=presto-tests
+#    - TEST_SPECIFIC_MODULES=presto-raptor
+#    - TEST_SPECIFIC_MODULES=presto-accumulo
+#    - TEST_SPECIFIC_MODULES=presto-cassandra
+#    - TEST_SPECIFIC_MODULES=presto-hive,presto-kafka,presto-mysql,presto-postgresql,presto-redis
+#    - TEST_OTHER_MODULES=!presto-tests,!presto-raptor,!presto-accumulo,!presto-cassandra,!presto-hive,!presto-kafka,!presto-mysql,!presto-postgresql,!presto-redis,!presto-docs,!presto-server,!presto-server-rpm
+#    - PRODUCT_TESTS_BASIC_ENVIRONMENT=true
     - PRODUCT_TESTS_SPECIFIC_ENVIRONMENT=true
-    - HIVE_TESTS=true
+#    - HIVE_TESTS=true
 
 sudo: required
 dist: trusty
