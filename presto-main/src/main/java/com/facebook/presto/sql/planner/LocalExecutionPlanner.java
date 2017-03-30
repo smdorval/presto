@@ -604,9 +604,6 @@ public class LocalExecutionPlanner
         {
             List<Type> types = getSourceOperatorTypes(node, context.getTypes());
 
-            // Enforce a driver instance count of 1 since we use multiple exchange clients
-            context.setDriverInstanceCount(1);
-
             Map<Symbol, Integer> sourceLayout = makeLayoutFromOutputSymbols(node.getOutputSymbols());
             List<Symbol> orderBySymbols = node.getOrderBy();
             List<Integer> sortChannels = getChannelsForSymbols(orderBySymbols, sourceLayout);

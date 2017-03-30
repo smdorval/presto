@@ -35,6 +35,7 @@ import com.facebook.presto.sql.planner.plan.IndexJoinNode;
 import com.facebook.presto.sql.planner.plan.JoinNode;
 import com.facebook.presto.sql.planner.plan.LimitNode;
 import com.facebook.presto.sql.planner.plan.MarkDistinctNode;
+import com.facebook.presto.sql.planner.plan.MergeNode;
 import com.facebook.presto.sql.planner.plan.OutputNode;
 import com.facebook.presto.sql.planner.plan.PlanNode;
 import com.facebook.presto.sql.planner.plan.PlanVisitor;
@@ -152,6 +153,14 @@ public class AddLocalExchanges
 
         @Override
         public PlanWithProperties visitSort(SortNode node, StreamPreferredProperties parentPreferences)
+        {
+            // sort requires that all data be in one stream
+            // this node changes the input organization completely, so we do not pass through parent preferences
+            return planAndEnforceChildren(node, singleStream(), defaultParallelism(session));
+        }
+
+        @Override
+        public PlanWithProperties visitMerge(MergeNode node, StreamPreferredProperties parentPreferences)
         {
             // sort requires that all data be in one stream
             // this node changes the input organization completely, so we do not pass through parent preferences
