@@ -36,6 +36,7 @@ import com.facebook.presto.type.RowType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import io.airlift.slice.Slice;
 import io.airlift.slice.Slices;
 import org.joda.time.DateTimeZone;
 
@@ -56,6 +57,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.facebook.presto.spi.type.BigintType.BIGINT;
 import static com.facebook.presto.spi.type.BooleanType.BOOLEAN;
+import static com.facebook.presto.spi.type.Chars.trimSpacesAndTruncateToLength;
 import static com.facebook.presto.spi.type.DateTimeEncoding.packDateTimeWithZone;
 import static com.facebook.presto.spi.type.DateType.DATE;
 import static com.facebook.presto.spi.type.DoubleType.DOUBLE;
@@ -254,7 +256,10 @@ public class MaterializedResult
             type.writeSlice(blockBuilder, Slices.utf8Slice((String) value));
         }
         else if (type instanceof CharType) {
-            type.writeSlice(blockBuilder, Slices.utf8Slice((String) value));
+            CharType charType = (CharType) type;
+            int length = charType.getLength();
+            Slice resulteSlice =  trimSpacesAndTruncateToLength(Slices.utf8Slice((String) value), length);
+            type.writeSlice(blockBuilder, resulteSlice);
         }
         else if (VARBINARY.equals(type)) {
             type.writeSlice(blockBuilder, Slices.wrappedBuffer((byte[]) value));
