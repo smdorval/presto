@@ -220,8 +220,10 @@ trap terminate INT TERM EXIT
 if [[ "$ENVIRONMENT" == "singlenode-sqlserver" ]]; then
   environment_compose up -d sqlserver
   EXTERNAL_SERVICES="hadoop-master cassandra"
+  EXTERNAL_SERVICES_LOGS="hadoop-master cassandra sqlserver"
 else
   EXTERNAL_SERVICES="hadoop-master mysql postgres cassandra"
+  EXTERNAL_SERVICES_LOGS="hadoop-master mysql postgres cassandra"
 fi
 
 echo "Displaying free memory:"
@@ -229,7 +231,7 @@ free -m
 environment_compose up -d ${EXTERNAL_SERVICES}
 
 # start docker logs for the external services
-environment_compose logs --no-color -f ${EXTERNAL_SERVICES} &
+environment_compose logs --no-color -f ${EXTERNAL_SERVICES_LOGS} &
 
 echo "Displaying free memory:"
 free -m
