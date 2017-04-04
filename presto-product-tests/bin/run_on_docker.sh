@@ -218,7 +218,8 @@ trap terminate INT TERM EXIT
 # singlenode-sqlserver once we resolve
 # https://github.com/prestodb/tempto/issues/190
 if [[ "$ENVIRONMENT" == "singlenode-sqlserver" ]]; then
-  EXTERNAL_SERVICES="hadoop-master sqlserver cassandra"
+  environment_compose up -d sqlserver
+  EXTERNAL_SERVICES="hadoop-master cassandra"
 else
   EXTERNAL_SERVICES="hadoop-master mysql postgres cassandra"
 fi
