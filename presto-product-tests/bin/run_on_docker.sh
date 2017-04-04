@@ -264,6 +264,9 @@ retry check_presto
 echo "Displaying free memory:"
 free -m
 
+echo "Displaying docker containers"
+docker ps
+
 # run product tests
 set +e
 run_product_tests "$@"
