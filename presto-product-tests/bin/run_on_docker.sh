@@ -219,6 +219,7 @@ trap terminate INT TERM EXIT
 # https://github.com/prestodb/tempto/issues/190
 if [[ "$ENVIRONMENT" == "singlenode-sqlserver" ]]; then
   environment_compose up -d sqlserver
+  sleep 30s
   EXTERNAL_SERVICES="hadoop-master cassandra"
   EXTERNAL_SERVICES_LOGS="hadoop-master cassandra sqlserver"
 else
