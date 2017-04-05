@@ -218,24 +218,15 @@ trap terminate INT TERM EXIT
 # singlenode-sqlserver once we resolve
 # https://github.com/prestodb/tempto/issues/190
 if [[ "$ENVIRONMENT" == "singlenode-sqlserver" ]]; then
-  environment_compose up -d sqlserver
-  sleep 30s
-  EXTERNAL_SERVICES="hadoop-master cassandra"
-  EXTERNAL_SERVICES_LOGS="hadoop-master cassandra sqlserver"
+  EXTERNAL_SERVICES="hadoop-master cassandra sqlserver"
 else
   EXTERNAL_SERVICES="hadoop-master mysql postgres cassandra"
-  EXTERNAL_SERVICES_LOGS="hadoop-master mysql postgres cassandra"
 fi
 
-echo "Displaying free memory:"
-free -m
 environment_compose up -d ${EXTERNAL_SERVICES}
 
 # start docker logs for the external services
-environment_compose logs --no-color -f ${EXTERNAL_SERVICES_LOGS} &
-
-echo "Displaying free memory:"
-free -m
+environment_compose logs --no-color -f ${EXTERNAL_SERVICES} &
 
 # start ldap container
 if [[ "$ENVIRONMENT" == "singlenode-ldap" ]]; then
@@ -248,9 +239,6 @@ HADOOP_LOGS_PID=$!
 retry check_hadoop
 stop_unnecessary_hadoop_services
 
-echo "Displaying free memory:"
-free -m
-
 # start presto containers
 environment_compose up -d ${PRESTO_SERVICES}
 
@@ -261,10 +249,13 @@ PRESTO_LOGS_PID=$!
 # wait until presto is started
 retry check_presto
 
-echo "Displaying free memory:"
+echo ">> Sleeping for 2 mins <<"
+sleep 120s
+
+echo ">> Displaying free memory <<"
 free -m
 
-echo "Displaying docker containers"
+echo ">> Displaying docker containers <<"
 docker ps
 
 # run product tests
@@ -272,9 +263,6 @@ set +e
 run_product_tests "$@"
 EXIT_CODE=$?
 set -e
-
-echo "Displaying free memory:"
-free -m
 
 # execution finished successfully
 # disable trap, run cleanup manually
