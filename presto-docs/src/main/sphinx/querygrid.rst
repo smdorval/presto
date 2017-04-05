@@ -3,7 +3,7 @@ Teradata QueryGrid
 ******************
 
 Teradata provides low latency high performing connectors that
-supports high concurrency and parallel processing between Teradata
+support high concurrency and parallel processing between Teradata
 and Presto. 
 
 The Teradata-To-Presto QueryGrid connector can initiate a query from
