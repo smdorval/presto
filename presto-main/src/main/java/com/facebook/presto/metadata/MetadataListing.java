@@ -76,7 +76,8 @@ public final class MetadataListing
 
     public static Set<GrantInfo> listTablePrivileges(Session session, Metadata metadata, AccessControl accessControl, QualifiedTablePrefix prefix)
     {
-        return ImmutableSet.copyOf(metadata.listTablePrivileges(session, prefix));
+        Set<GrantInfo> grants = ImmutableSet.copyOf(metadata.listTablePrivileges(session, prefix));
+        return accessControl.filterGrants(session.getRequiredTransactionId(), session.getIdentity(), prefix, grants);
     }
 
     public static Map<SchemaTableName, List<ColumnMetadata>> listTableColumns(Session session, Metadata metadata, AccessControl accessControl, QualifiedTablePrefix prefix)
