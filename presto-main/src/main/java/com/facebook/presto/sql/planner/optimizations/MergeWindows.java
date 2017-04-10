@@ -64,6 +64,7 @@ import static com.google.common.base.Preconditions.checkState;
  *                `--...
  */
 
+@Deprecated
 public class MergeWindows
         implements PlanOptimizer
 {
