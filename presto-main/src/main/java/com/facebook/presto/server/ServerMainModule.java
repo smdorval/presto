@@ -26,6 +26,7 @@ import com.facebook.presto.cost.CoefficientBasedStatsCalculator;
 import com.facebook.presto.cost.CostCalculator;
 import com.facebook.presto.cost.CostCalculatorUsingExchanges;
 import com.facebook.presto.cost.CostCalculatorWithEstimatedExchanges;
+import com.facebook.presto.cost.CostComparator;
 import com.facebook.presto.cost.StatsCalculator;
 import com.facebook.presto.event.query.QueryMonitor;
 import com.facebook.presto.event.query.QueryMonitorConfig;
@@ -340,6 +341,7 @@ public class ServerMainModule
         binder.bind(Metadata.class).to(MetadataManager.class).in(Scopes.SINGLETON);
 
         // statistics calculator
+        binder.bind(CostComparator.class).in(Scopes.SINGLETON);
         binder.bind(StatsCalculator.class).to(CoefficientBasedStatsCalculator.class).in(Scopes.SINGLETON);
         binder.bind(CostCalculator.class).to(CostCalculatorUsingExchanges.class).in(Scopes.SINGLETON);
         binder.bind(CostCalculator.class)
