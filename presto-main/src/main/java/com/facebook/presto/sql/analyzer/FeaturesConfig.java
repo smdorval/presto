@@ -49,6 +49,7 @@ public class FeaturesConfig
 
     private boolean distributedIndexJoinsEnabled;
     private boolean distributedJoinsEnabled = true;
+    private boolean supportNullOnLhsOfSemiJoin = true;
     private boolean colocatedJoinsEnabled;
     private boolean reorderJoins;
     private boolean redistributeWrites = true;
@@ -142,6 +143,18 @@ public class FeaturesConfig
     public boolean isLegacyMapSubscript()
     {
         return legacyMapSubscript;
+    }
+
+    @Config("support-null-on-lhs-of-semi-join")
+    public FeaturesConfig setSupportNullOnLhsOfSemiJoin(boolean supportNullOnLhsOfSemiJoin)
+    {
+        this.supportNullOnLhsOfSemiJoin = supportNullOnLhsOfSemiJoin;
+        return this;
+    }
+
+    public boolean isSupportNullOnLhsOfSemiJoin()
+    {
+        return supportNullOnLhsOfSemiJoin;
     }
 
     @Config("distributed-joins-enabled")
