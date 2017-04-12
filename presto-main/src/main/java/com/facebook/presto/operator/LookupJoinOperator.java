@@ -111,7 +111,6 @@ public class LookupJoinOperator
 
         if (!finishing && lookupSourceFactory.hasSpilled()) {
             ensureSpillerLoaded();
-            unspillNextLookupSource();
         }
         finishing = true;
     }
