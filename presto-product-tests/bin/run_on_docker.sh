@@ -269,4 +269,4 @@ docker ps
 #trap - INT TERM EXIT
 #cleanup
 
-exit ${EXIT_CODE}
+#exit ${EXIT_CODE}
