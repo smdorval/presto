@@ -7,7 +7,7 @@ env:
     - MAVEN_FAST_INSTALL="-DskipTests $MAVEN_SKIP_CHECKS_AND_DOCS -B -q -T C1"
     - ARTIFACTS_UPLOAD_PATH=travis_build_artifacts/${TRAVIS_REPO_SLUG}/${TRAVIS_BRANCH}/${TRAVIS_BUILD_NUMBER}
   matrix:
-    - MAVEN_CHECKS=true
+#    - MAVEN_CHECKS=true
 #    - TEST_SPECIFIC_MODULES=presto-tests
 #    - TEST_SPECIFIC_MODULES=presto-raptor
 #    - TEST_SPECIFIC_MODULES=presto-accumulo
