@@ -153,7 +153,7 @@ function cleanup() {
 function terminate() {
   trap - INT TERM EXIT
   set +e
-  cleanup
+#  cleanup
   exit 130
 }
 
@@ -249,8 +249,8 @@ PRESTO_LOGS_PID=$!
 # wait until presto is started
 retry check_presto
 
-echo ">> Sleeping for 2 mins <<"
-sleep 120s
+#echo ">> Sleeping for 2 mins <<"
+#sleep 120s
 
 echo ">> Displaying free memory <<"
 free -m
