@@ -259,14 +259,14 @@ echo ">> Displaying docker containers <<"
 docker ps
 
 # run product tests
-#set +e
-#run_product_tests "$@"
-#EXIT_CODE=$?
-#set -e
+set +e
+run_product_tests "$@"
+EXIT_CODE=$?
+set -e
 
 # execution finished successfully
 # disable trap, run cleanup manually
-#trap - INT TERM EXIT
-#cleanup
+trap - INT TERM EXIT
+cleanup
 
-#exit ${EXIT_CODE}
+exit ${EXIT_CODE}
